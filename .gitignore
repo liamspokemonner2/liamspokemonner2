@@ -1,41 +1,125 @@
-# Compiled Lua sources
-luac.out
 
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
+toclipboard("https://discord.gg/GdcHBpzF")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
+local Window = Rayfield:CreateWindow({
+   Name = "ANIX TOWER OF HELL",
+   LoadingTitle = "Loading...",
+   LoadingSubtitle = "by liamisthebest",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = true, -- Create a custom folder for your hub/game
+      FileName = "ANIX"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+   KeySystem = true, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "ANIX KEY SYSTEM",
+      Subtitle = "Key System",
+      Note = "MY DISCORD IS COPIED TO CLIPBOARD LINK TO KEY IS IN MY DISCORD",
+      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"https://pastebin.com/raw/d5inkVPB"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
 
-# Precompiled Headers
-*.gch
-*.pch
+Rayfield:Notify({
+   Title = "TOWER OF HELL",
+   Content = "TOWER OF HELL SCRIPT",
+   Duration = 24343534535353,
+   Image = 4483362458,
+   Actions = { -- Notification Buttons
+      Ignore = {
+         Name = "EXELENT SCRIPT",
+         Callback = function()
+         print("YO MAMA TOWER OF HELL SCRIPT")
+      end
+   },
+},
+})
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
+local MainTab = Window:CreateTab("Main", 4483362458) -- Title, Image
+local MainSection = MainTab:CreateSection("Main")
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+local PlayerTab = Window:CreateTab("Player", 4483362458) -- Title, Image
+local PlayerSection = PlayerTab:CreateSection("Player")
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+local InfoTab = Window:CreateTab("Info", 4483362458) -- Title, Image
+local InfoSection = InfoTab:CreateSection("Info")
+
+local Input = InfoTab:CreateInput({
+   Name = "Info about script",
+   PlaceholderText = "Its the best script for tower of hell keybind is K",
+   RemoveTextAfterFocusLost = false,
+   Callback = function(Text)
+   -- The function that takes place when the input is changed
+   -- The variable (Text) is a string for the value in the text box
+   end,
+})
+
+local Button = MainTab:CreateButton({
+   Name = "Fly on G",
+   Interact = 'Click',
+   Callback = function()
+       loadstring(game:HttpGet('https://pastebin.com/raw/VBi6wgtR'))()
+   end,
+})
+
+local Button = PlayerTab:CreateButton({
+   Name = "InfiniteJump",
+   Interact = 'Click',
+   Callback = function()
+       local infjmp = true
+ game:GetService("UserInputService").jumpRequest:Connect(function()
+     if infjmp then
+         game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass"Humanoid":ChangeState("Jumping")
+     end
+ end)
+   end,
+})
+
+local Slider = PlayerTab:CreateSlider({
+    Name = "Walkspeed",
+    Range = {16, 400},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = 16,
+    Flag = "Slider1", 
+    Callback = function(Value)
+         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+    end,
+ })
+
+local Slider = PlayerTab:CreateSlider({
+   Name = "Jump Height Selector",
+   Range = {50, 400},
+   Increment = 1,
+   Suffix = "",
+   CurrentValue = 50,
+   Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+      local player=game.Players.LocalPlayer.Character player.Humanoid.JumpPower = (Value)
+   -- The variable (Value) is a number which correlates to the value the slider is currently at
+   end,
+})
+
+local Button = PlayerTab:CreateButton({
+   Name = "Noclip",
+   Callback = function()
+       loadstring(game:HttpGet('https://pastebin.com/raw/zUsGnuPJ'))()
+   end,
+})
+
+local Button = MainTab:CreateButton({
+   Name = "Click + CRTL Tp",
+   Interact = 'Click',
+   Callback = function()
+       loadstring(game:HttpGet('https://pastebin.com/raw/nfhyLAfS'))()
+   end,
+})
 
