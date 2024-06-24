@@ -8,20 +8,6 @@ local targetPlayerName = nil
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Create the toggle button
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 100, 0, 50)
-toggleButton.Position = UDim2.new(1, -110, 0, 10)  -- Positioned above playerList
-toggleButton.Text = "Toggle TP"
-toggleButton.Parent = screenGui
-
--- Create the teleport button
-local teleportButton = Instance.new("TextButton")
-teleportButton.Size = UDim2.new(0, 100, 0, 50)
-teleportButton.Position = UDim2.new(1, -110, 0, 70)  -- Positioned under playerList
-teleportButton.Text = "Teleport Up"
-teleportButton.Parent = screenGui
-
 local playerDropdown = Instance.new("Frame")
 playerDropdown.Size = UDim2.new(0, 150, 0, 200)
 playerDropdown.Position = UDim2.new(1, -160, 0.5, -225)
@@ -34,11 +20,55 @@ playerList.CanvasSize = UDim2.new(0, 0, 0, 0)  -- Initialize CanvasSize
 playerList.ScrollBarThickness = 10
 playerList.Parent = playerDropdown
 
+local function populatePlayerDropdown()
+    playerList:ClearAllChildren()
+    local yOffset = 0
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        local playerButton = Instance.new("TextButton")
+        playerButton.Size = UDim2.new(1, 0, 0, 30)
+        playerButton.Position = UDim2.new(0, 0, 0, yOffset)
+        playerButton.Text = player.Name
+        playerButton.Parent = playerList
+        playerButton.MouseButton1Click:Connect(function()
+            targetPlayerName = player.Name
+        end)
+        yOffset = yOffset + 35
+    end
+    playerList.CanvasSize = UDim2.new(0, 0, 0, yOffset)
+end
+
+game.Players.PlayerAdded:Connect(function()
+    populatePlayerDropdown()
+end)
+
+game.Players.PlayerRemoving:Connect(function()
+    populatePlayerDropdown()
+end)
+
+populatePlayerDropdown()
+
+-- Create the toggle button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 100, 0, 50)
+toggleButton.Position = UDim2.new(1, -160, 0.5, -270)  -- Positioned directly above playerList
+toggleButton.Text = "Toggle TP"
+toggleButton.Parent = screenGui
+
 local function toggleActions()
     repeatActions = not repeatActions
 end
 
 toggleButton.MouseButton1Click:Connect(toggleActions)
+
+-- Calculate the position for the Teleport Up button
+local teleportButtonYOffset = playerDropdown.AbsolutePosition.Y + playerDropdown.AbsoluteSize.Y + 10
+
+-- Create the teleport button
+local teleportButton = Instance.new("TextButton")
+teleportButton.Size = UDim2.new(0, 100, 0, 50)
+teleportButton.Position = UDim2.new(1, -160, 0, teleportButtonYOffset)  -- Positioned directly below playerList
+teleportButton.Text = "Teleport Up"
+teleportButton.Parent = screenGui
 
 local function teleportUp()
     local height = 500  -- Adjust the height as needed
@@ -103,33 +133,6 @@ local function simulateMouseClicks()
         wait(0.1)
     end
 end
-
-local function populatePlayerDropdown()
-    playerList:ClearAllChildren()
-    local yOffset = 0
-    for _, player in ipairs(game.Players:GetPlayers()) do
-        local playerButton = Instance.new("TextButton")
-        playerButton.Size = UDim2.new(1, 0, 0, 30)
-        playerButton.Position = UDim2.new(0, 0, 0, yOffset)
-        playerButton.Text = player.Name
-        playerButton.Parent = playerList
-        playerButton.MouseButton1Click:Connect(function()
-            targetPlayerName = player.Name
-        end)
-        yOffset = yOffset + 35
-    end
-    playerList.CanvasSize = UDim2.new(0, 0, 0, yOffset)
-end
-
-game.Players.PlayerAdded:Connect(function()
-    populatePlayerDropdown()
-end)
-
-game.Players.PlayerRemoving:Connect(function()
-    populatePlayerDropdown()
-end)
-
-populatePlayerDropdown()
 
 spawn(teleportBehindPlayer)
 spawn(simulateKeyPresses)
