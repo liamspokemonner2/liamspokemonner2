@@ -8,15 +8,26 @@ local targetPlayerName = nil
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
+-- Create the text label at the top center
+local topTextLabel = Instance.new("TextLabel")
+topTextLabel.Size = UDim2.new(0, 200, 0, 20)
+topTextLabel.Position = UDim2.new(0.5, -100, 0, 10)  -- Centered horizontally, 10 pixels from the top
+topTextLabel.Text = "Made by @By A Dev"
+topTextLabel.TextColor3 = Color3.new(1, 1, 1)
+topTextLabel.BackgroundTransparency = 1
+topTextLabel.TextScaled = true
+topTextLabel.Parent = screenGui
+
 local playerDropdown = Instance.new("Frame")
 playerDropdown.Size = UDim2.new(0, 150, 0, 200)
 playerDropdown.Position = UDim2.new(1, -160, 0.5, -225)
 playerDropdown.BackgroundTransparency = 0.5
+playerDropdown.Visible = false  -- Initially hide the dropdown
 playerDropdown.Parent = screenGui
 
 local playerList = Instance.new("ScrollingFrame")
 playerList.Size = UDim2.new(1, 0, 1, 0)
-playerList.CanvasSize = UDim2.new(0, 0, 0, 0)  -- Initialize CanvasSize
+playerList.CanvasSize = UDim2.new(0, 0, 0, 0)
 playerList.ScrollBarThickness = 10
 playerList.Parent = playerDropdown
 
@@ -24,49 +35,50 @@ local function populatePlayerDropdown()
     playerList:ClearAllChildren()
     local yOffset = 0
     for _, player in ipairs(game.Players:GetPlayers()) do
-        local playerButton = Instance.new("TextButton")
-        playerButton.Size = UDim2.new(1, 0, 0, 30)
-        playerButton.Position = UDim2.new(0, 0, 0, yOffset)
-        playerButton.Text = player.Name
-        playerButton.Parent = playerList
-        playerButton.MouseButton1Click:Connect(function()
-            targetPlayerName = player.Name
-        end)
-        yOffset = yOffset + 35
+        if player ~= game.Players.LocalPlayer then
+            local playerButton = Instance.new("TextButton")
+            playerButton.Size = UDim2.new(1, 0, 0, 30)
+            playerButton.Position = UDim2.new(0, 0, 0, yOffset)
+            playerButton.Text = player.Name
+            playerButton.Parent = playerList
+            playerButton.MouseButton1Click:Connect(function()
+                targetPlayerName = player.Name
+            end)
+            yOffset = yOffset + 35
+        end
     end
     playerList.CanvasSize = UDim2.new(0, 0, 0, yOffset)
 end
 
-game.Players.PlayerAdded:Connect(function()
+local function showDropdown()
+    playerDropdown.Visible = true
     populatePlayerDropdown()
-end)
-
-game.Players.PlayerRemoving:Connect(function()
-    populatePlayerDropdown()
-end)
-
-populatePlayerDropdown()
-
--- Create the toggle button
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 100, 0, 50)
-toggleButton.Position = UDim2.new(1, -160, 0.5, -270)  -- Positioned directly above playerList
-toggleButton.Text = "Toggle TP"
-toggleButton.Parent = screenGui
-
-local function toggleActions()
-    repeatActions = not repeatActions
 end
 
-toggleButton.MouseButton1Click:Connect(toggleActions)
+local function hideDropdown()
+    playerDropdown.Visible = false
+end
+
+-- Function to handle initial setup and respawn
+local function setupGui()
+    showDropdown()  -- Show the dropdown initially
+
+    -- Connect to PlayerAdded event to update the player list
+    game.Players.PlayerAdded:Connect(populatePlayerDropdown)
+
+    -- Connect to PlayerRemoving event to update the player list
+    game.Players.PlayerRemoving:Connect(populatePlayerDropdown)
+end
+
+setupGui()  -- Call setup function to initialize the GUI
 
 -- Calculate the position for the Teleport Up button
-local teleportButtonYOffset = playerDropdown.AbsolutePosition.Y + playerDropdown.AbsoluteSize.Y + 10
+local teleportButtonYOffset = playerDropdown.Position.Y.Offset + playerDropdown.Size.Y.Offset + 10
 
 -- Create the teleport button
 local teleportButton = Instance.new("TextButton")
 teleportButton.Size = UDim2.new(0, 100, 0, 50)
-teleportButton.Position = UDim2.new(1, -160, 0, teleportButtonYOffset)  -- Positioned directly below playerList
+teleportButton.Position = UDim2.new(1, -160, 0, teleportButtonYOffset)  -- Positioned directly below playerDropdown
 teleportButton.Text = "Teleport Up"
 teleportButton.Parent = screenGui
 
@@ -84,6 +96,22 @@ teleportButton.MouseButton1Click:Connect(function()
         teleportUp()
     end
 end)
+
+-- Calculate the position for the Toggle TP button
+local toggleButtonYOffset = teleportButton.Position.Y.Offset + teleportButton.Size.Y.Offset + 10
+
+-- Create the toggle button for teleportation
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 100, 0, 50)
+toggleButton.Position = UDim2.new(1, -160, 0, toggleButtonYOffset)  -- Positioned below teleportButton
+toggleButton.Text = "Toggle TP"
+toggleButton.Parent = screenGui
+
+local function toggleActions()
+    repeatActions = not repeatActions
+end
+
+toggleButton.MouseButton1Click:Connect(toggleActions)
 
 local function teleportBehindPlayer()
     while true do
