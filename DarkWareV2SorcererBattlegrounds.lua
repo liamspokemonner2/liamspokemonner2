@@ -1,6 +1,4 @@
 local repeatActions = true  -- Initial state to start actions
-local teleportEnabled = false  -- Initial state for teleporting
-local infiniteJumpEnabled = false  -- Initial state for infinite jump
 
 local player = game.Players.LocalPlayer
 local userInputService = game:GetService("UserInputService")
@@ -13,28 +11,20 @@ screenGui.Parent = player:WaitForChild("PlayerGui")
 -- Create the toggle button
 local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.new(0, 100, 0, 50)
-toggleButton.Position = UDim2.new(1, -110, 0.5, -125)
-toggleButton.Text = "Toggle"
+toggleButton.Position = UDim2.new(1, -110, 0, 10)  -- Positioned above playerList
+toggleButton.Text = "Toggle TP"
 toggleButton.Parent = screenGui
 
--- Create the Infinite Jump toggle button
-local infiniteJumpButton = Instance.new("TextButton")
-infiniteJumpButton.Size = UDim2.new(0, 100, 0, 50)
-infiniteJumpButton.Position = UDim2.new(1, -110, 0.5, -75)
-infiniteJumpButton.Text = "Infinite Jump: OFF"
-infiniteJumpButton.Parent = screenGui
-
--- Create the teleport toggle button
+-- Create the teleport button
 local teleportButton = Instance.new("TextButton")
 teleportButton.Size = UDim2.new(0, 100, 0, 50)
-teleportButton.Position = UDim2.new(1, -110, 0.5, -25)
-teleportButton.Text = "Teleport: OFF"
+teleportButton.Position = UDim2.new(1, -110, 0, 70)  -- Positioned under playerList
+teleportButton.Text = "Teleport Up"
 teleportButton.Parent = screenGui
 
--- Create the dropdown for player selection
 local playerDropdown = Instance.new("Frame")
 playerDropdown.Size = UDim2.new(0, 150, 0, 200)
-playerDropdown.Position = UDim2.new(1, -160, 0.5, 75)
+playerDropdown.Position = UDim2.new(1, -160, 0.5, -225)
 playerDropdown.BackgroundTransparency = 0.5
 playerDropdown.Parent = screenGui
 
@@ -46,41 +36,28 @@ playerList.Parent = playerDropdown
 
 local function toggleActions()
     repeatActions = not repeatActions
-    
-    if repeatActions then
-        toggleButton.Text = "Toggle: ON"
-    else
-        toggleButton.Text = "Toggle: OFF"
-    end
-end
-
-local function toggleInfiniteJump()
-    infiniteJumpEnabled = not infiniteJumpEnabled
-    
-    if infiniteJumpEnabled then
-        infiniteJumpButton.Text = "Infinite Jump: ON"
-    else
-        infiniteJumpButton.Text = "Infinite Jump: OFF"
-    end
-end
-
-local function toggleTeleport()
-    teleportEnabled = not teleportEnabled
-    
-    if teleportEnabled then
-        teleportButton.Text = "Teleport: ON"
-    else
-        teleportButton.Text = "Teleport: OFF"
-    end
 end
 
 toggleButton.MouseButton1Click:Connect(toggleActions)
-infiniteJumpButton.MouseButton1Click:Connect(toggleInfiniteJump)
-teleportButton.MouseButton1Click:Connect(toggleTeleport)
+
+local function teleportUp()
+    local height = 500  -- Adjust the height as needed
+
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local currentPos = player.Character.HumanoidRootPart.Position
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(currentPos + Vector3.new(0, height, 0))
+    end
+end
+
+teleportButton.MouseButton1Click:Connect(function()
+    if repeatActions then
+        teleportUp()
+    end
+end)
 
 local function teleportBehindPlayer()
     while true do
-        if repeatActions and teleportEnabled and targetPlayerName then
+        if repeatActions and targetPlayerName then
             local targetPlayer = game.Players:FindFirstChild(targetPlayerName)
             if targetPlayer and targetPlayer.Character then
                 local targetHumanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -127,21 +104,6 @@ local function simulateMouseClicks()
     end
 end
 
-local function toggleInfiniteJumpAbility()
-    while true do
-        if infiniteJumpEnabled then
-            local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                -- Check if the jump button is pressed
-                if userInputService:IsKeyDown(Enum.KeyCode.Space) then
-                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                end
-            end
-        end
-        wait(0.1)
-    end
-end
-
 local function populatePlayerDropdown()
     playerList:ClearAllChildren()
     local yOffset = 0
@@ -159,11 +121,11 @@ local function populatePlayerDropdown()
     playerList.CanvasSize = UDim2.new(0, 0, 0, yOffset)
 end
 
-game.Players.PlayerAdded:Connect(function(player)
+game.Players.PlayerAdded:Connect(function()
     populatePlayerDropdown()
 end)
 
-game.Players.PlayerRemoving:Connect(function(player)
+game.Players.PlayerRemoving:Connect(function()
     populatePlayerDropdown()
 end)
 
@@ -172,4 +134,3 @@ populatePlayerDropdown()
 spawn(teleportBehindPlayer)
 spawn(simulateKeyPresses)
 spawn(simulateMouseClicks)
-spawn(toggleInfiniteJumpAbility)
