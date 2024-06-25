@@ -124,7 +124,7 @@ local function teleportBehindPlayer()
                 end
             end
         end
-        wait(0.05)  -- Adjust wait time as needed for faster teleportation
+        wait(0.01)  -- Faster teleportation interval (adjust as needed)
     end
 end
 
