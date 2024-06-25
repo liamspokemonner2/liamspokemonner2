@@ -22,7 +22,7 @@ local playerDropdown = Instance.new("Frame")
 playerDropdown.Size = UDim2.new(0, 150, 0, 200)
 playerDropdown.Position = UDim2.new(1, -160, 0.5, -225)
 playerDropdown.BackgroundTransparency = 0.5
-playerDropdown.Visible = false  -- Initially hide the dropdown
+playerDropdown.Visible = true  -- Initially show the dropdown
 playerDropdown.Parent = screenGui
 
 local playerList = Instance.new("ScrollingFrame")
@@ -82,18 +82,12 @@ teleportButton.Position = UDim2.new(1, -160, 0, teleportButtonYOffset)  -- Posit
 teleportButton.Text = "Teleport Up"
 teleportButton.Parent = screenGui
 
-local function teleportUp()
+teleportButton.MouseButton1Click:Connect(function()
     local height = 500  -- Adjust the height as needed
 
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         local currentPos = player.Character.HumanoidRootPart.Position
         player.Character.HumanoidRootPart.CFrame = CFrame.new(currentPos + Vector3.new(0, height, 0))
-    end
-end
-
-teleportButton.MouseButton1Click:Connect(function()
-    if repeatActions then
-        teleportUp()
     end
 end)
 
