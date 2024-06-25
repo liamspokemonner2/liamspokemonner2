@@ -1,4 +1,5 @@
 local repeatActions = true  -- Initial state to start actions
+local walkSpeedEnabled = false  -- Initial state for walk speed script
 
 local player = game.Players.LocalPlayer
 local userInputService = game:GetService("UserInputService")
@@ -82,12 +83,18 @@ teleportButton.Position = UDim2.new(1, -160, 0, teleportButtonYOffset)  -- Posit
 teleportButton.Text = "Teleport Up"
 teleportButton.Parent = screenGui
 
-teleportButton.MouseButton1Click:Connect(function()
+local function teleportUp()
     local height = 500  -- Adjust the height as needed
 
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         local currentPos = player.Character.HumanoidRootPart.Position
         player.Character.HumanoidRootPart.CFrame = CFrame.new(currentPos + Vector3.new(0, height, 0))
+    end
+end
+
+teleportButton.MouseButton1Click:Connect(function()
+    if repeatActions then
+        teleportUp()
     end
 end)
 
@@ -106,6 +113,36 @@ local function toggleActions()
 end
 
 toggleButton.MouseButton1Click:Connect(toggleActions)
+
+-- Calculate the position for the Toggle Walk Speed button
+local toggleWalkSpeedButtonYOffset = toggleButton.Position.Y.Offset + toggleButton.Size.Y.Offset + 10
+
+-- Create the toggle button for walk speed
+local toggleWalkSpeedButton = Instance.new("TextButton")
+toggleWalkSpeedButton.Size = UDim2.new(0, 100, 0, 50)
+toggleWalkSpeedButton.Position = UDim2.new(1, -160, 0, toggleWalkSpeedButtonYOffset)  -- Positioned below toggleButton
+toggleWalkSpeedButton.Text = "Toggle WalkSpeed"
+toggleWalkSpeedButton.Parent = screenGui
+
+local function setWalkSpeed()
+    while walkSpeedEnabled do
+        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 50
+        end
+        wait(0.05)
+    end
+end
+
+toggleWalkSpeedButton.MouseButton1Click:Connect(function()
+    walkSpeedEnabled = not walkSpeedEnabled
+    if walkSpeedEnabled then
+        spawn(setWalkSpeed)
+    else
+        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 16  -- Reset to default walk speed when disabled
+        end
+    end
+end)
 
 local function teleportBehindPlayer()
     while true do
