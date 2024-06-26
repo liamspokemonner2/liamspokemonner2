@@ -1,5 +1,21 @@
 local player = game.Players.LocalPlayer
 local userInputService = game:GetService("UserInputService")
+
+-- Check if the place ID matches one of the specified values
+local validPlaceIds = {10449761463, 13601434903}
+local function isValidPlaceId(placeId)
+    for _, id in ipairs(validPlaceIds) do
+        if placeId == id then
+            return true
+        end
+    end
+    return false
+end
+
+if not isValidPlaceId(game.PlaceId) then
+    return  -- Exit the script if the place ID does not match any valid ID
+end
+
 local targetPlayerName = nil
 local originalPosition = nil  -- Variable to store the original position
 local teleporting = false  -- Flag to track if teleporting is active
